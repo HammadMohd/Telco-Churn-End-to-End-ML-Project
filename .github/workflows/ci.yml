@@ -2,7 +2,7 @@ name: Build and Push to Docker Hub
 
 on:
   push:
-    branches: [main]  # Only trigger on main branch pushes
+    branches: [main]
 
 jobs:
   build-and-push:
@@ -12,7 +12,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx # modern Docker builder that supports multi-platform builds
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Log in to Docker Hub
@@ -22,9 +22,9 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./dockerfile  # change if your Dockerfile has a different name or path
+          file: ./dockerfile
           push: true
-          tags: anasriad8/telco-fastapi:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/telco-churn-app:latest
