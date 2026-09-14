@@ -78,6 +78,7 @@ BINARY_MAP = {
     "Dependents": {"No": 0, "Yes": 1},            # Has dependents  
     "PhoneService": {"No": 0, "Yes": 1},          # Phone service
     "PaperlessBilling": {"No": 0, "Yes": 1},      # Billing preference
+    "SeniorCitizen": {0: 0, 1: 1},                # Senior citizen (already 0/1 in data)
 }
 
 # Numeric columns that need type coercion
