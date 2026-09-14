@@ -59,10 +59,36 @@ except Exception as e:
 # === FEATURE SCHEMA LOADING ===
 # CRITICAL: Load the exact feature column order used during training
 # This ensures the model receives features in the expected order
+import json
+
 try:
+    # Try loading feature columns from various locations
+    FEATURE_COLS = None
+    
+    # 1. Try inside model dir (Docker: /app/model/feature_columns.txt)
     feature_file = os.path.join(MODEL_DIR, "feature_columns.txt")
-    with open(feature_file) as f:
-        FEATURE_COLS = [ln.strip() for ln in f if ln.strip()]
+    if os.path.exists(feature_file):
+        with open(feature_file) as f:
+            FEATURE_COLS = [ln.strip() for ln in f if ln.strip()]
+    
+    # 2. Try parent artifacts dir (local MLflow: .../artifacts/feature_columns.txt)
+    if FEATURE_COLS is None:
+        artifacts_dir = os.path.dirname(MODEL_DIR)
+        feature_file = os.path.join(artifacts_dir, "feature_columns.txt")
+        if os.path.exists(feature_file):
+            with open(feature_file) as f:
+                FEATURE_COLS = [ln.strip() for ln in f if ln.strip()]
+    
+    # 3. Try local artifacts/ folder (json format)
+    if FEATURE_COLS is None:
+        json_file = os.path.join("artifacts", "feature_columns.json")
+        if os.path.exists(json_file):
+            with open(json_file) as f:
+                FEATURE_COLS = json.load(f)
+    
+    if FEATURE_COLS is None:
+        raise Exception("No feature_columns file found in any location")
+    
     print(f"✅ Loaded {len(FEATURE_COLS)} feature columns from training")
 except Exception as e:
     raise Exception(f"Failed to load feature columns: {e}")
